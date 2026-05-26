@@ -23,18 +23,25 @@ export class CurrencyApiService {
           ),
         );
 
-      const rates =
-        response.data.rates;
+      const data = response.data;
 
-      if (!rates) {
+      if (
+        !data ||
+        data.result === 'error' ||
+        !data.rates
+      ) {
         throw new BadRequestException(
-          'Não foi possível obter as taxas de câmbio',
+          'Código de moeda inválido',
         );
       }
 
-      return rates;
+      return data.rates;
     } catch (error) {
       console.error(error);
+
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
 
       throw new InternalServerErrorException(
         'Erro ao consultar API de câmbio',
